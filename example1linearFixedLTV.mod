@@ -1,5 +1,6 @@
 var sigmaomegae_v, sigmaomegah_v, 
-omegae_v, omegah_v, kappae_v, kappah_v,
+omegae_v, omegah_v, 
+//kappae_v, kappah_v,
 nng_v, z_v, zetc_v,
 PP_v, 
 Fp_v, Kp_v, Pstar_v, LAM1_v,
@@ -18,6 +19,7 @@ f_e_v
 f_h_v
 m_v
 c_v
+//DIFL_v
 v_v
 SS_v
 QhF_v
@@ -25,7 +27,7 @@ resi_derr_v
 gdpobs, consumptionobs,
 Hloan_obs, CIloan_obs
 govobs
-//default_h_obs default_e_obs
+default_h_obs default_e_obs
 investobs
 hours_obs
 CIchargoff_obs, Hcharfoff_obs,
@@ -36,19 +38,27 @@ wealth_const_v
 //wealth_social_v
 ;
 
-varexo 
+//Inflat_obs; 
 
-e6, e7, e1, e2, e3, e8, 
+varexo e4, e5, 
+//e6, e7, 
+e1, e2, e3, e8, 
 me9 
 me13 me14 
 me15 me16
 e19
 ;
 
+//me17 me18
+//erk
+// me17;
+//me10 
+//me11 me12 
 
 
 parameters sigmaomegae_ss sigmaomegah_ss
-rhosigmaomegae_ss rhosigmaomegah_ss rhosigmakappae_ss rhosigmakappah_ss
+rhosigmaomegae_ss rhosigmaomegah_ss 
+//rhosigmakappae_ss rhosigmakappah_ss
 omegae_ss omegah_ss kappae_ss kappah_ss
 rhoggg rhozz rhozetc
 ddelta aalpha nnup_pSS
@@ -86,34 +96,38 @@ Fpw_ss
 Fp_ss Kp_ss
 nng z_ss zetc_ss
 ssii rk_ss
-alphpi rhop alphdey alphakomegae alphakomegah
-alpha_mm_e
-alpha_mm_h
+alphpi rhop alphdey 
+//alphakomegae alphakomegah
+//alpha_mm_e
+//alpha_mm_h
 wealth_unconst_ss
 wealth_const_ss 
-//wealth_social_ss 
-inflation1_ss
-;
+//wealth_social_ss
+inflation1_ss ;
 
 
 
 load ss_model_RM.mat;
+//for i=1:length(M_.params)
+//    deep_parameter_name = M_.param_names(i,:);
+//    eval(['M_.params(i)  = ' deep_parameter_name ' ;'])
+//end;
 
 
 
 
 aalpha = 0.400000000000000;
-alphakomegae= 0.517000000000000; 
-alphakomegah = 0.517000000000000;
+//alphakomegae= 1.817000000000000; 
+//alphakomegah = 1.817000000000000;
 
-alpha_mm_e= 0.5; 
-alpha_mm_h= 0.5; 
+//alpha_mm_e= 1.817000000000000; 
+//alpha_mm_h= 1.817000000000000; 
 
 
-alphdey = 0.32;
-alphpi = 1.96;
-bb = 0.69;
-bb2 = 0.59;
+alphdey = 0.310000000000000;
+alphpi = 1.817000000000000;
+bb = 0.630000000000000;
+bb2 = 0.630000000000000;
 bbeta = 0.990000000000000; 
 bbeta2 = 0.950000000000000;
 c_ss = 0.114297997334664; 
@@ -169,25 +183,25 @@ QK_ss = 1;
 R_ss = 0.010101010101010;
 re_ss = 0.010101010101010;
 resi_derr_ss = 1.877208490268647;
-rhoggg = 0.756; 
-rhop = 0.86;
+rhoggg = 0.730000000000000; 
+rhop = 0.877000000000000;
 rhoQh_ss = 0.522000000000000;
-rhosigmakappae_ss = 0.7;
-rhosigmakappah_ss = 0.7;
-//rhosigmaomegae_ss = 0.522000000000000;
-//rhosigmaomegah_ss = 0.522000000000000;
-rhozetc = 0.642;
-rhozz = 0.997;
+//rhosigmakappae_ss = 0.522000000000000;
+//rhosigmakappah_ss = 0.522000000000000;
+rhosigmaomegae_ss = 0.522000000000000;
+rhosigmaomegah_ss = 0.522000000000000;
+rhozetc = 0.721000000000000;
+rhozz = 0.980000000000000;
 rk_ss = 0.117851130197758;
 RK_ss = 0.092851130197758;
-sigmakappae_ss = 4;
-sigmakappah_ss = 4 ;
+//sigmakappae_ss = 4;
+//sigmakappah_ss = 4 ;
 sigmaomegae_ss = 2.500000000000000;
 sigmaomegah_ss = 2.500000000000000;
 SS_ss = 0.006834837457277;
 ssigl = 1;
 ssigl2 = 1;
-ssii = 4.95;
+ssii = 5;
 std1_ggg = 0.021000000000000;
 std1_Qh_ss = 0.060000000000000;
 std1_sigmakappae_ss = 0.060000000000000;
@@ -207,39 +221,41 @@ zetap = 0.702000000000000;
 zetc_ss = 1;
 
 
+inflation1_ss = 2;
+
+
 wealth_unconst_ss = bbeta  *(cu_ss  - bb  * cu_ss)  - Lu_ss  ;
 wealth_const_ss   = bbeta2 *(cc_ss  - bb2 * cc_ss)  - Lc_ss  + chih*hh_SS;
 //wealth_social_ss  = (1-bbeta) * wealth_unconst_ss + (1-bbeta2) * wealth_const_ss ; 
 
-inflation1_ss = 2;
-
 model(linear);
+
 
 1/wealth_unconst_ss* wealth_unconst_v = bbeta  *(1/cu_ss* cu_v  - bb  *1/cu_ss* cu_v(-1))  - 1/Lu_ss*Lu_v  ;
 1/wealth_const_ss * wealth_const_v   = bbeta2 *(1/cc_ss*cc_v  - bb2 * 1/cc_ss*cc_v(-1))  - 1/ Lc_ss *Lc_v  + chih*1/hh_SS*hh_v;
 //1/wealth_social_ss*wealth_social_v  = (1-bbeta) * 1/wealth_const_ss*wealth_unconst_v + (1-bbeta2) * 1/wealth_unconst_ss* wealth_const_v ; 
 
 
-outputgap_v =  Y_v - Y_v(-1) ;
+
+
+outputgap_v =  Y_v - Y_ss ;
 inflation1_v = PP_v - PP_v(-1);
 
+// exogenous 
+sigmaomegae_v = e4 + rhosigmaomegae_ss*sigmaomegae_v(-1);
 
-// suppose default probaility is fixed  time invariant, and we drop shocks e4 and e5
-//sigmaomegae_v = e4 + rhosigmaomegae_ss*sigmaomegae_v(-1);
-//sigmaomegah_v = e5 + rhosigmaomegah_ss*sigmaomegah_v(-1);
-// determinstic 
-sigmaomegae_v = sigmaomegae_ss ; 
-sigmaomegah_v = sigmaomegah_ss ; 
-
+sigmaomegah_v = e5 + rhosigmaomegah_ss*sigmaomegah_v(-1);
 
 1/omegae_ss*omegae_v  -  sigmaomegae_ss * sigmaomegae_v;
 
 1/omegah_ss*omegah_v  -  sigmaomegah_ss * sigmaomegah_v ;
 
-kappae_v = e6 + rhosigmakappae_ss*kappae_v(-1) -  alphakomegae *(omegae_v(-1)  - omegae_ss )     - (1-rhosigmakappae_ss)* alpha_mm_e * ( m_v  - m_v(-1) )  ;
+//kappae_v = e6 + rhosigmakappae_ss*kappae_v(-1) -  alphakomegae *(omegae_v(-1) - omegae_ss)   -  alpha_mm_e * ( m_v  - m_v(-1) )   ;
+//kappae_v = e6 + rhosigmakappae_ss*kappae_v(-1) -  (1-rhosigmakappae_ss)*alphakomegae *omegae_v(-1)   - (1-rhosigmakappae_ss)* alpha_mm_e * ( m_v  - m_v(-1) )   ;
 //kappae_v = e6 + rhosigmakappae_ss*kappae_v(-1) +  alphakomegae *omegae_v(-1) ;
 
-kappah_v = e7 +  rhosigmakappah_ss*kappah_v(-1) -  alphakomegah *(omegah_v(-1) -  omegah_ss)  - (1-rhosigmakappah_ss) * alpha_mm_h * ( d_h_v - d_h_v(-1) )  ;
+//kappah_v = e7 +  rhosigmakappah_ss*kappah_v(-1) - alphakomegah *( omegah_v(-1) - omegah_ss ) -   alpha_mm_h * ( d_h_v - d_h_v(-1) )       ;
+//kappah_v = e7 +  rhosigmakappah_ss*kappah_v(-1) - (1-rhosigmakappah_ss)*alphakomegah *omegah_v(-1)  -  (1-rhosigmakappah_ss)* alpha_mm_h * ( d_h_v - d_h_v(-1) )       ;
 //kappah_v = e7 +  rhosigmakappah_ss*kappah_v(-1) + alphakomegah *omegah_v(-1)   ;
 
 nng_v   =   e1 + rhoggg*nng_v(-1);
@@ -352,7 +368,7 @@ LAM1_v(+1)   =  aalpha  *rk_v + (1-aalpha)*  WW_v ; //
 //- 1/RK_ss * RK_v(+1)      + 1/Nw_ss * Nw_v   - 1/LAM1_ss * LAM1_v     + 1/omegae_ss *omegae_v   -  1/ kappae_ss * kappae_v  + 1/R_ss* R_v ;
 
 
- RK_v(+1)  -  R_v     -  Nw_v       +  omegae_v  +   kappae_v  ;
+ RK_v(+1)  -  R_v     -  Nw_v       +  omegae_v  * kappae_ss  ;
 
 // RK_v(+1)  -  R_v     -  Nw_v       +  omegae_v  +   kappae_v  ;
 // RK_v(+1)  -  R_v(+1)     -  Nw_v       +  omegae_v  +   kappae_v   -  omegae_v  -   kappae_v  ;
@@ -379,7 +395,7 @@ LAM1_v(+1)   =  aalpha  *rk_v + (1-aalpha)*  WW_v ; //
 
 // try
 // bgg
--  Nw_v   -   kappae_v  +   RK_v   -  R_v(-1)  +   K_v(-1) +   QK_v(-1)  +   Nw_v(-1)   ;
+-  Nw_v * kappae_ss  +   RK_v   -  R_v(-1)  +   K_v(-1) +   QK_v(-1)  +   Nw_v(-1)   ;
 //-  Nw_v   -   kappae_v   + omegae_v  +   RK_v   -  R_v  +   K_v(-1) +   QK_v(-1)  +   Nw_v(-1)   ;
 
 //-  Nw_v   +   kappae_v   - omegae_v  +   RK_v   -  R_v  +   K_v(-1) +   QK_v(-1)  +   Nw_v(-1)   ;
@@ -389,6 +405,7 @@ LAM1_v(+1)   =  aalpha  *rk_v + (1-aalpha)*  WW_v ; //
 
 
 - Y_v  + aalpha * K_v + (1-aalpha) *  z_v  +  (1-aalpha) *L_v ; 
+
 
 //R_v  - rhop*  R_v(-1) 
 //- (1-rhop)*alphpi* ( PP_v )  
@@ -414,31 +431,31 @@ ssigl  * Lu_v  =  WW_v  +  lambda_hu_v ;
 ssigl2 * Lc_v  =  WW_v  +  lambda_hc_v ;
 
 
-lambda_hu_v -  zetc_v  +  cu_v  - bb* cu_v(-1) + bb*bbeta*zetc_v(+1)  ;
+lambda_hu_v -  zetc_v   +  cu_v  - bb* cu_v(-1) + bb*bbeta*zetc_v(+1)   ;
 
 
 
-lambda_hc_v  -  zetc_v  +  cc_v  -  bb2 *cc_v(-1) + bb2*bbeta*zetc_v(+1)   ;
+lambda_hc_v  -  zetc_v  +  cc_v  -  bb2 *cc_v(-1) + bb2*bbeta2*zetc_v(+1)    ;
 
 
 // we assume hh to be exogenous instead of being determinstic;
 hh_v = e8 + rhoQh_ss*hh_v(-1);
 
 
-cu_v   =  WW_v  +  Lu_v  -  dep_h_v     +   R_v(-1) - ( PP_v - PP_v(-1)) ;
+cu_v   =  WW_v  +  Lu_v  -  dep_h_v     +   R_v(-1) - (PP_v - PP_v(-1) );
 - dep_h_v(-1)  +  d_h_v ;
 //5/27/2022
 // - d_h_v(-1)    +  omegah_v   +  kappah_v  +  Qh_v   +  hh_v(-1)   +   omegah_v  +   kappah_v  +  Qh_v    +   hh_v(-1) -   R_v  ;
 //- d_h_v(-1)    +  omegah_v   +  kappah_v  +  Qh_v   +  hh_v(-1)     +  Qh_v    +   hh_v(-1) -   R_v  ;
-- d_h_v(-1)    +  omegah_v   +  kappah_v  +  Qh_v   +  hh_v(-1)   +   omegah_v  +   kappah_v  +  Qh_v    +   hh_v(-1) -   R_v  ;
+- d_h_v(-1)    +  omegah_v   +  kappah_ss  *  Qh_v   +  hh_v(-1)   +   omegah_v  *   kappah_ss  +  Qh_v    +   hh_v(-1) -   R_v  ;
 
 // cc_v  =   WW_v  +   Lc_v +  Qh_v  +   hh_v(-1)   +   d_h_v   -  Qh_v   +  hh_v  -  d_h_v(-1) +  re_v ;
- cc_v  =   WW_v  +   Lc_v +  Qh_v  +   hh_v(-1)   +   d_h_v   -  Qh_v   +  hh_v  -  d_h_v(-1) +  re_v - (PP_v - PP_v(-1));
+ cc_v  =   WW_v  +   Lc_v +  Qh_v  +   hh_v(-1)   +   d_h_v   -  Qh_v   +  hh_v  -  d_h_v(-1) +  re_v - (PP_v - PP_v(-1)) ;
 
 
 
-- f_e_v  +  omegae_v(-1)  +  kappae_v(-1) +  K_v(-1)  +   QK_v(-1) +   RK_v(-1) ;
-- f_h_v  +   omegah_v(-1)  +  kappah_v(-1)  +   hh_v(-1)  +  Qh_v(-1) ;
+- f_e_v  +  omegae_v(-1)  * kappae_ss +  K_v(-1)  +   QK_v(-1) +   RK_v(-1) ;
+- f_h_v  +   omegah_v(-1)  * kappah_ss  +   hh_v(-1)  +  Qh_v(-1) ;
 
 // 88888
 //1/m_ss * m_v  = 1/QK_ss * QK_v + 1/K_ss * K_v  - 1/Nw_ss * Nw_v;
@@ -456,7 +473,7 @@ c_v  =  cc_v  +  cu_v ;
 //bgg
 //v_v  = -  omegae_v  -  kappae_v   +  omegae_v  +   RK_v   +   QK_v(-1)  +  K_v(-1)  -  Nw_v(-1)  +  Nw_v(-1)  +  Nw_v(-1) +  R_v -  R_v  + QK_v(-1)  +   K_v(-1) ;
 //
-v_v  = -  omegae_v(+1)  -  kappae_v(+1)   +  omegae_v(+1)  +   RK_v(+1)   +   QK_v  +  K_v -  Nw_v  +  Nw_v +  Nw_v +  R_v(+1) -  R_v(+1)  + QK_v  +   K_v ;
+v_v  = -  omegae_v(+1)  * kappae_ss   +  omegae_v(+1)  +   RK_v(+1)   +   QK_v  +  K_v  +  Nw_v +  R_v(+1) -  R_v(+1)  + QK_v  +   K_v ;
 //v_v  =  -  kappae_v(+1)    +   RK_v(+1)   +   QK_v  +  K_v  +  Nw_v  + QK_v  +   K_v ;
 
 
@@ -464,10 +481,10 @@ v_v  = -  omegae_v(+1)  -  kappae_v(+1)   +  omegae_v(+1)  +   RK_v(+1)   +   QK
 SS_v  =  QK_v -  v_v  +  K_v ;
 
 
-//QhF_v = - chih*hh_v - chih*lambda_hc_v +  kappah_v  +  Qh_v  +  lambda_hc_v  -  re_v -  lambda_hc_v + bbeta*lambda_hc_v(+1)   - bbeta*lambda_hc_v  - bbeta*Qh_v(+1)  ;
-//QhF_v = - chih*hh_v  - (chih+ bbeta)*lambda_hc_v  +  kappah_v  +  Qh_v   -  re_v + bbeta*lambda_hc_v(+1)    - bbeta*Qh_v(+1)  ;
+//QhF_v = - chih*hh_v - chih*lambda_hc_v +  kappah_v  +  Qh_v  +  lambda_hc_v  -  re_v -  lambda_hc_v + bbeta2*lambda_hc_v(+1)   - bbeta2*lambda_hc_v  - bbeta2*Qh_v(+1)  ;
+//QhF_v = - chih*hh_v  - (chih+ bbeta2)*lambda_hc_v  +  kappah_v  +  Qh_v   -  re_v + bbeta2*lambda_hc_v(+1)    - bbeta2*Qh_v(+1)  ;
 
-QhF_v = - chih*hh_v - chih*lambda_hc_v +  kappah_v  +  Qh_v  +  lambda_hc_v  -  re_v -  lambda_hc_v + bbeta*lambda_hc_v(+1)   - bbeta*lambda_hc_v  - bbeta*Qh_v(+1)  ;
+QhF_v = - chih*hh_v - chih*lambda_hc_v +  kappah_ss  *  Qh_v  +  lambda_hc_v  -  re_v -  lambda_hc_v + bbeta2*lambda_hc_v(+1)   - bbeta2*lambda_hc_v  - bbeta2*Qh_v(+1)  ;
 
 
 
@@ -491,7 +508,10 @@ Hcharfoff_obs = f_h_v  + me16 ;//
 govobs = gg_v  ; 
 
 
+default_h_obs  = omegah_v ;//+ me10
+default_e_obs  =  omegae_v  ; 
  
+//Inflat_obs = PP_v;
 
 
 end;
@@ -499,13 +519,13 @@ end;
 
 
 shocks;
-//var e4  = 0.06^2;
-//var e5  = 0.06^2;  
-var e6; stderr 1;
-var e7 ; stderr 1;
+var e4; stderr 1;
+var e5; stderr 1; 
+//var e6  = 0.06^2; 
+//var e7  = 0.06^2;
 var e1; stderr 1; 
 var e2 ; stderr 1;
-var e3  ; stderr 1; 
+var e3  ; stderr 1;  
 
 var e8  ; stderr 1;
 
@@ -516,11 +536,18 @@ var e19; stderr 1;
 var me13; stderr 1;
 var me14 ; stderr 1; 
 var me15; stderr 1;  
-var me16; stderr 1; 
+var me16; stderr 1;
 end;
 
 
+//var me17  = 0.09^2;
+//var me18  = 0.09^2;
  
+//var me17  = 0.0001^2
+//var erk = 0.01^2;  
+//var me10  = 0.0001^2;  
+//var me11  = 0.0001^2;  
+//var me12  = 0.0001^2;  
 
 
 model_diagnostics;
@@ -546,10 +573,11 @@ write_latex_dynamic_model;
 //varobs gdpobs, consumptionobs,
 //Hloan_obs, CIloan_obs,
 //govobs, 
-//investobs,
-//hours_obs,
+//default_h_obs default_e_obs
+//investobs
+//hours_obs
 //CIchargoff_obs, Hcharfoff_obs;
-
+//, Inflat_obs;
 
 
 
@@ -589,7 +617,7 @@ write_latex_dynamic_model;
 //stderr e8,INV_GAMMA2_PDF,0.001,Inf;   
 
 //stderr me9,INV_GAMMA2_PDF,0.001,Inf;  //
-
+//stderr me10,INV_GAMMA2_PDF,0.002,Inf;  //
 
 //stderr e19,INV_GAMMA2_PDF,0.001,Inf;  //
 
@@ -597,15 +625,15 @@ write_latex_dynamic_model;
 //stderr me14,INV_GAMMA2_PDF,0.001,Inf;  //
 //stderr me15,INV_GAMMA2_PDF,0.001,Inf;   
 //stderr me16,INV_GAMMA2_PDF,0.001,Inf;  //
+//stderr me17,INV_GAMMA2_PDF,0.002,Inf;  //
+//stderr me18,INV_GAMMA2_PDF,0.002,Inf;  //
+
+//alphakomegae,  NORMAL_PDF, 1.5, 0.1;
+//alphakomegah, NORMAL_PDF, 1.5, 0.1;
 
 
-//alphakomegae,  BETA_PDF, 0.5, 0.1;
-//alphakomegah, BETA_PDF, 0.5, 0.1;
-
-
-//alpha_mm_e,  BETA_PDF, 0.5, 0.1;
-//alpha_mm_h, BETA_PDF, 0.5, 0.1;
-
+//alpha_mm_e,  NORMAL_PDF, 1.5, 0.1;
+//alpha_mm_h, NORMAL_PDF, 1.5, 0.1;
 
 
 //end;
@@ -623,13 +651,14 @@ write_latex_dynamic_model;
 
 //identification(ar=10);
 // mode_compute=6
-//estimation(datafile=datalogdiff84,mode_check,diffuse_filter,mh_nblocks=4,mh_replic=10000,mh_jscale=3,mh_init_scale=0.2,mode_compute=4, moments_varendo, bayesian_irf, conf_sig=0.90)gdpobs, consumptionobs,
+//estimation(datafile=datalogdiff84,mode_check,diffuse_filter,mh_nblocks=4,mh_replic=10000,mh_jscale=3,mh_init_scale=0.2,mode_compute=6, moments_varendo, bayesian_irf, conf_sig=0.90)gdpobs, consumptionobs,
 //Hloan_obs, CIloan_obs, 
 //govobs,
-//investobs,
-//hours_obs,
+//default_h_obs default_e_obs
+//investobs
+//hours_obs
 //CIchargoff_obs, Hcharfoff_obs;
-
+//, Inflat_obs;
 
 
 
@@ -647,40 +676,15 @@ stoch_simul(order=1,irf=151,nograph,nocorr,nofunctions,simul_replic=1000);
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-save irf_plot_with_policy001 c_v_e7 c_v_e6 Y_v_e6 Y_v_e7... 
-L_v_e6 L_v_e7 m_v_e6 m_v_e7 d_h_v_e6 d_h_v_e7...
-Y_v_e19 L_v_e19 c_v_e19 d_h_v_e19 m_v_e19 omegae_v_e19... 
-omegae_v_e6 omegah_v_e19 omegah_v_e7...
-Qh_v_e19 outputgap_v_e19 inflation1_v_e19... 
-wealth_unconst_v_e19 wealth_const_v_e19;
-// wealth_social_v_e19...
-//Y_v_e8 L_v_e8 c_v_e8 d_h_v_e8  m_v_e8 Qh_v_e8 outputgap_v_e8 inflation1_v_e8
-
-//c_v_e5 
-//c_v_e4...
-//Y_v_e4 Y_v_e5 
-//L_v_e4 L_v_e5 
-//kappae_v_e4 kappah_v_e5...
-//m_v_e4 m_v_e5 
-//d_h_v_e4 d_h_v_e5 
-//omegae_v_e4...
-
-//omegah_v_e5
-
-
+save irf_plot_with_constantLTV c_v_e5 c_v_e4...
+Y_v_e4 Y_v_e5...
+L_v_e4 L_v_e5...
+m_v_e4 m_v_e5...
+d_h_v_e4 d_h_v_e5...
+Y_v_e19 L_v_e19 c_v_e19 d_h_v_e19  m_v_e19...
+omegae_v_e19 omegae_v_e4...
+omegah_v_e19 omegah_v_e5...
+Qh_v_e19 outputgap_v_e19 inflation1_v_e19...
+wealth_unconst_v_e19 wealth_const_v_e19; 
 
 

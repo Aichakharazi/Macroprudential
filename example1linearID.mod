@@ -29,7 +29,12 @@ govobs
 default_h_obs default_e_obs
 investobs
 hours_obs
-CIchargoff_obs, Hcharfoff_obs;
+CIchargoff_obs, Hcharfoff_obs,
+outputgap_v,
+inflation1_v,
+wealth_unconst_v, 
+wealth_const_v, 
+wealth_social_v;
 //Inflat_obs; 
 
 varexo e4, e5, e6, e7, e1, e2, e3, e8, 
@@ -85,7 +90,12 @@ Fpw_ss
 Fp_ss Kp_ss
 nng z_ss zetc_ss
 ssii rk_ss
-alphpi rhop alphdey alphakomegae alphakomegah;
+alphpi rhop alphdey alphakomegae alphakomegah
+alpha_mm_e
+alpha_mm_h
+wealth_unconst_ss
+wealth_const_ss wealth_social_ss
+inflation1_ss;
 
 
 
@@ -99,8 +109,13 @@ load ss_model_RM.mat;
 
 
 aalpha = 0.400000000000000;
-alphakomegae= 1.817000000000000; 
-alphakomegah = 1.817000000000000;
+alphakomegae= 0.517000000000000; 
+alphakomegah = 0.517000000000000;
+
+alpha_mm_e= 0.5; 
+alpha_mm_h= 0.5; 
+
+
 alphdey = 0.310000000000000;
 alphpi = 1.817000000000000;
 bb = 0.630000000000000;
@@ -197,7 +212,23 @@ zetal = 0.771000000000000;
 zetap = 0.702000000000000;
 zetc_ss = 1;
 
+
+wealth_unconst_ss = bbeta  *(cu_ss  - bb  * cu_ss)  - Lu_ss  ;
+wealth_const_ss   = bbeta2 *(cc_ss  - bb2 * cc_ss)  - Lc_ss  + chih*hh_SS;
+wealth_social_ss  = (1-bbeta) * wealth_unconst_ss + (1-bbeta2) * wealth_const_ss ; 
+
+
+
+inflation1_ss = 1;
+
 model(linear);
+
+1/wealth_unconst_ss* wealth_unconst_v = bbeta  *(1/cu_ss* cu_v  - bb  *1/cu_ss* cu_v(-1))  - 1/Lu_ss*Lu_v  ;
+1/wealth_const_ss * wealth_const_v   = bbeta2 *(1/cc_ss*cc_v  - bb2 * 1/cc_ss*cc_v(-1))  - 1/ Lc_ss *Lc_v  + chih*1/hh_SS*hh_v;
+1/wealth_social_ss*wealth_social_v  = (1-bbeta) * 1/wealth_const_ss*wealth_unconst_v + (1-bbeta2) * 1/wealth_unconst_ss* wealth_const_v ; 
+
+outputgap_v =  Y_v - Y_ss ;
+inflation1_v = PP_v - PP_v(-1);
 
 // exogenous 
 sigmaomegae_v = e4 + rhosigmaomegae_ss*sigmaomegae_v(-1);
@@ -208,10 +239,12 @@ sigmaomegah_v = e5 + rhosigmaomegah_ss*sigmaomegah_v(-1);
 
 1/omegah_ss*omegah_v  -  sigmaomegah_ss * sigmaomegah_v ;
 
-kappae_v = e6 + rhosigmakappae_ss*kappae_v(-1) -  (1-rhosigmakappae_ss)*alphakomegae *omegae_v(-1) ;
+kappae_v = e6 + rhosigmakappae_ss*kappae_v(-1) -  alphakomegae *(omegae_v(-1) - omegae_ss)   -  alpha_mm_e * ( m_v  - m_v(-1) )   ;
+//kappae_v = e6 + rhosigmakappae_ss*kappae_v(-1) -  (1-rhosigmakappae_ss)*alphakomegae *omegae_v(-1)   - (1-rhosigmakappae_ss)* alpha_mm_e * ( m_v  - m_v(-1) )   ;
 //kappae_v = e6 + rhosigmakappae_ss*kappae_v(-1) +  alphakomegae *omegae_v(-1) ;
 
-kappah_v = e7 +  rhosigmakappah_ss*kappah_v(-1) - (1-rhosigmakappah_ss)*alphakomegah *omegah_v(-1)   ;
+kappah_v = e7 +  rhosigmakappah_ss*kappah_v(-1) - alphakomegah *( omegah_v(-1) - omegah_ss ) -   alpha_mm_h * ( d_h_v - d_h_v(-1) )       ;
+//kappah_v = e7 +  rhosigmakappah_ss*kappah_v(-1) - (1-rhosigmakappah_ss)*alphakomegah *omegah_v(-1)  -  (1-rhosigmakappah_ss)* alpha_mm_h * ( d_h_v - d_h_v(-1) )       ;
 //kappah_v = e7 +  rhosigmakappah_ss*kappah_v(-1) + alphakomegah *omegah_v(-1)   ;
 
 nng_v   =   e1 + rhoggg*nng_v(-1);
@@ -362,9 +395,14 @@ LAM1_v(+1)   =  aalpha  *rk_v + (1-aalpha)*  WW_v ; //
 
 - Y_v  + aalpha * K_v + (1-aalpha) *  z_v  +  (1-aalpha) *L_v ; 
 
+
 R_v  - rhop*  R_v(-1) 
-- (1-rhop)*alphpi* ( PP_v )  
+- (1-rhop)*alphpi* (  (PP_v - PP_ss )    )  
 - (1-rhop)*alphdey* ( Y_v  ) - e19 ;
+
+//  R_v  - rhop*  R_v(-1) 
+//- (1-rhop)*alphpi* ( inflation1_v(-1) )  
+//- (1-rhop)*alphdey* ( Y_v-Y_ss) - e19 ;
 
 
 - gg_v +  nng_v  + Y_v ; 
@@ -381,18 +419,18 @@ ssigl  * Lu_v  =  WW_v  +  lambda_hu_v ;
 ssigl2 * Lc_v  =  WW_v  +  lambda_hc_v ;
 
 
-lambda_hu_v -  zetc_v  +  PP_v  +  cu_v  - bb* cu_v(-1) + bb*bbeta*zetc_v(+1)  - PP_v ;
+lambda_hu_v -  zetc_v   +  cu_v  - bb* cu_v(-1) + bb*bbeta*zetc_v(+1)  ;
 
 
 
-lambda_hc_v  -  zetc_v  +  PP_v  +  cc_v  -  bb2 *cc_v(-1) + bb2*bbeta2*zetc_v(+1) -  PP_v   ;
+lambda_hc_v  -  zetc_v    +  cc_v  -  bb2 *cc_v(-1) + bb2*bbeta2*zetc_v(+1)    ;
 
 
 // we assume hh to be exogenous instead of being determinstic;
 hh_v = e8 + rhoQh_ss*hh_v(-1);
 
 
-cu_v   =  WW_v  +  Lu_v  -  dep_h_v     +   R_v(-1) ;
+cu_v   =  WW_v  +  Lu_v  -  dep_h_v     +   R_v(-1) - ( PP_v - PP_v(-1)) ;
 - dep_h_v(-1)  +  d_h_v ;
 //5/27/2022
 // - d_h_v(-1)    +  omegah_v   +  kappah_v  +  Qh_v   +  hh_v(-1)   +   omegah_v  +   kappah_v  +  Qh_v    +   hh_v(-1) -   R_v  ;
@@ -400,7 +438,7 @@ cu_v   =  WW_v  +  Lu_v  -  dep_h_v     +   R_v(-1) ;
 - d_h_v(-1)    +  omegah_v   +  kappah_v  +  Qh_v   +  hh_v(-1)   +   omegah_v  +   kappah_v  +  Qh_v    +   hh_v(-1) -   R_v  ;
 
 // cc_v  =   WW_v  +   Lc_v +  Qh_v  +   hh_v(-1)   +   d_h_v   -  Qh_v   +  hh_v  -  d_h_v(-1) +  re_v ;
- cc_v  =   WW_v  +   Lc_v +  Qh_v  +   hh_v(-1)   +   d_h_v   -  Qh_v   +  hh_v  -  d_h_v(-1) +  re_v ;
+ cc_v  =   WW_v  +   Lc_v +  Qh_v  +   hh_v(-1)   +   d_h_v   -  Qh_v   +  hh_v  -  d_h_v(-1) +  re_v - (PP_v - PP_v(-1));
 
 
 
@@ -469,24 +507,24 @@ end;
 
 
 shocks;
-var e4  = 0.06^2;
-var e5  = 0.06^2;  
-var e6  = 0.06^2; 
-var e7  = 0.06^2;
-var e1  = 0.021^2; 
-var e2  = 0.03^2; 
-var e3  = 0.09^2;  
+var e4; stderr 1;
+var e5; stderr 1;
+var e6; stderr 1;
+var e7 ; stderr 1;
+var e1; stderr 1; 
+var e2 ; stderr 1;
+var e3  ; stderr 1;  
 
-var e8  = 0.09^2;  
+var e8  ; stderr 1;
 
-var me9  = 0.09^2;
-var e19  = 0.06^2; 
+var me9; stderr 1;
+var e19; stderr 1;  
  
 
-var me13  = 0.09^2;  
-var me14  = 0.09^2;  
-var me15  = 0.09^2;  
-var me16  = 0.09^2; 
+var me13; stderr 1;
+var me14 ; stderr 1; 
+var me15; stderr 1;  
+var me16; stderr 1;
 end;
 
 
@@ -508,7 +546,7 @@ resid(1);
 check;
 
 
-resid(1);
+//resid(1);
 
 model_diagnostics;
 
@@ -578,8 +616,13 @@ stderr me16,INV_GAMMA2_PDF,0.001,Inf;  //
 //stderr me17,INV_GAMMA2_PDF,0.002,Inf;  //
 //stderr me18,INV_GAMMA2_PDF,0.002,Inf;  //
 
-alphakomegae,  NORMAL_PDF, 1.5, 0.1;
-alphakomegah, NORMAL_PDF, 1.5, 0.1;
+alphakomegae,  BETA_PDF, 0.5, 0.1;
+alphakomegah, BETA_PDF, 0.5, 0.1;
+
+
+alpha_mm_e,  BETA_PDF, 0.5, 0.1;
+alpha_mm_h, BETA_PDF, 0.5, 0.1;
+
 
 end;
 
@@ -645,6 +688,9 @@ kappae_v_e4 kappah_v_e5...
 m_v_e4 m_v_e5 m_v_e6 m_v_e7...
 d_h_v_e4 d_h_v_e5 d_h_v_e6 d_h_v_e7...
 Y_v_e19 L_v_e19 c_v_e19 d_h_v_e19  m_v_e19...
+Qh_v_e19 outputgap_v_e19 inflation1_v_e19... 
+Y_v_e8 L_v_e8 c_v_e8 d_h_v_e8  m_v_e8 Qh_v_e8 outputgap_v_e8 inflation1_v_e8... 
+wealth_unconst_v_e19 wealth_const_v_e19 wealth_social_v_e19...
 omegae_v_e19 omegae_v_e6 omegae_v_e4...
 omegah_v_e19 omegah_v_e7 omegah_v_e5;
 
@@ -691,6 +737,7 @@ shock_matrix(:,strmatch('e19',M_.exo_names,'exact')) = innovations.e19';
 
  
 y2 = simult_(M_,options_,initial_condition_states,oo_.dr,shock_matrix,1);
+//y2 = simult_(initial_condition_states,oo_.dr,shock_matrix,1);
 y_IRF_both_nofric = y2(:,M_.maximum_lag+1:end)-repmat(oo_.dr.ys,1,n_points);
 
 
@@ -703,12 +750,31 @@ save y_IRF_both_nofric ;
 
 //kappah_v = e7 +  rhosigmakappah_ss*kappah_v(-1) + (1-rhosigmakappah_ss)*alphakomegah *omegah_v(-1)   ;
 
-set_param_value('rhosigmakappae_ss',0); // no fric loosen collateral policy  rhokk instead of  kk_pSS
-set_param_value('rhosigmakappah_ss',0); // no fric loosen collateral policy  rhokk instead of  kk_pSS
+//set_param_value('rhosigmakappae_ss',0); // no fric loosen collateral policy  rhokk instead of  kk_pSS
+//set_param_value('rhosigmakappah_ss',0); // no fric loosen collateral policy  rhokk instead of  kk_pSS
 set_param_value('alphakomegae',0); // no fric loosen collateral policy  rhokk instead of  kk_pSS
 set_param_value('alphakomegah',0); // no fric loosen collateral policy  rhokk instead of  kk_pSS
 
+set_param_value('alpha_mm_e',0); // no fric loosen collateral policy  rhokk instead of  kk_pSS
+set_param_value('alpha_mm_h',0); // no fric loosen collateral policy  rhokk instead of  kk_pSS
+
 stoch_simul(order=1,irf=151,nograph,nomoments,nocorr,nofunctions,simul_replic=1000);
+
+
+
+save irf_plot_with_lessactivepolicy c_v_e5 c_v_e7 c_v_e6 c_v_e4...
+Y_v_e4 Y_v_e5 Y_v_e6 Y_v_e7...
+L_v_e4 L_v_e5 L_v_e6 L_v_e7...
+kappae_v_e4 kappah_v_e5...
+m_v_e4 m_v_e5 m_v_e6 m_v_e7...
+d_h_v_e4 d_h_v_e5 d_h_v_e6 d_h_v_e7...
+Y_v_e19 L_v_e19 c_v_e19 d_h_v_e19  m_v_e19...
+Qh_v_e19 outputgap_v_e19 inflation1_v_e19... 
+Y_v_e8 L_v_e8 c_v_e8 d_h_v_e8  m_v_e8 Qh_v_e8 outputgap_v_e8 inflation1_v_e8... 
+wealth_unconst_v_e19 wealth_const_v_e19 wealth_social_v_e19...
+omegae_v_e19 omegae_v_e6 omegae_v_e4...
+omegah_v_e19 omegah_v_e7 omegah_v_e5;
+
 
 
 // initialize IRF generation
@@ -737,18 +803,46 @@ shock_matrix(:,strmatch('e19',M_.exo_names,'exact')) = innovations.e19';
 
  
 y2 = simult_(M_,options_,initial_condition_states,oo_.dr,shock_matrix,1);
+//y2 = simult_(initial_condition_states,oo_.dr,shock_matrix,1);
+
 y_IRF_both_noprudential = y2(:,M_.maximum_lag+1:end)-repmat(oo_.dr.ys,1,n_points);
 
 
 save y_IRF_both_noprudential;
+
+
+
+
+stoch_simul(order=1,irf=151,nograph,nocorr,nofunctions,simul_replic=1000);
+
+
+save irf_plot_with_lessactivpolicy c_v_e5 c_v_e7 c_v_e6 c_v_e4...
+Y_v_e4 Y_v_e5 Y_v_e6 Y_v_e7...
+L_v_e4 L_v_e5 L_v_e6 L_v_e7...
+kappae_v_e4 kappah_v_e5...
+m_v_e4 m_v_e5 m_v_e6 m_v_e7...
+d_h_v_e4 d_h_v_e5 d_h_v_e6 d_h_v_e7...
+Y_v_e19 L_v_e19 c_v_e19 d_h_v_e19  m_v_e19...
+Qh_v_e19 outputgap_v_e19 inflation1_v_e19... 
+Y_v_e8 L_v_e8 c_v_e8 d_h_v_e8  m_v_e8 Qh_v_e8 outputgap_v_e8 inflation1_v_e8... 
+wealth_unconst_v_e19 wealth_const_v_e19 wealth_social_v_e19...
+omegae_v_e19 omegae_v_e6 omegae_v_e4...
+omegah_v_e19 omegah_v_e7 omegah_v_e5
+
+
 // reset parameteres to their initial value
-set_param_value('rhosigmakappae_ss',0.522); // no fric loosen collateral policy  rhokk instead of  kk_pSS
-set_param_value('rhosigmakappah_ss',0.522); // no fric loosen collateral policy  rhokk instead of  kk_pSS
-set_param_value('alphakomegae',1.817); // no fric loosen collateral policy  rhokk instead of  kk_pSS
-set_param_value('alphakomegah',1.817); // no fric loosen collateral policy  rhokk instead of  kk_pSS
+//set_param_value('rhosigmakappae_ss',0.522); // no fric loosen collateral policy  rhokk instead of  kk_pSS
+//set_param_value('rhosigmakappah_ss',0.522); // no fric loosen collateral policy  rhokk instead of  kk_pSS
+//set_param_value('alphakomegae',1.817); // no fric loosen collateral policy  rhokk instead of  kk_pSS
+//set_param_value('alphakomegah',1.817); // no fric loosen collateral policy  rhokk instead of  kk_pSS
 
 
-
+set_param_value('rhosigmakappae_ss',oo_.posterior_mean.parameters.rhosigmakappae_ss); // no fric loosen collateral policy  rhokk instead of  kk_pSS
+set_param_value('rhosigmakappah_ss',oo_.posterior_mean.parameters.rhosigmakappah_ss); // no fric loosen collateral policy  rhokk instead of  kk_pSS
+set_param_value('alphakomegae',oo_.posterior_mean.parameters.alphakomegae); // no fric loosen collateral policy  rhokk instead of  kk_pSS
+set_param_value('alphakomegah',oo_.posterior_mean.parameters.alphakomegah); // no fric loosen collateral policy  rhokk instead of  kk_pSS
+set_param_value('alpha_mm_e',oo_.posterior_mean.parameters.alpha_mm_e); // no fric loosen collateral policy  rhokk instead of  kk_pSS
+set_param_value('alpha_mm_h',oo_.posterior_mean.parameters.alpha_mm_h); // no fric loosen collateral policy  rhokk instead of  kk_pSS
 
 
 
